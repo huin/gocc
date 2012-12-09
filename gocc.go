@@ -24,6 +24,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 
 	"github.com/huin/goserial"
 )
@@ -105,6 +106,7 @@ func (reader *MessageReader) ReadMessage() (*Message, error) {
 	}
 
 	msg := new(Message)
+	log.Printf("line=%q", line)
 	if err = xml.Unmarshal(line, msg); err != nil {
 		return nil, err
 	}
@@ -127,18 +129,18 @@ const (
 // Message is the top-level data type representing data from a Current Cost unit.
 type Message struct {
 	// Always present fields:
-	Src            string  `xml:"src"`
-	DaysSinceBirth int     `xml:"dsb"`
-	Temperature    float32 `xml:"tmpr"`
-	TimeOfDay      string  `xml:"time"`
+	Src            string `xml:"src"`
+	DaysSinceBirth int    `xml:"dsb"`
+	TimeOfDay      string `xml:"time"`
 
 	// Present in real-time updates:
-	Sensor   *int        `xml:"sensor"`
-	ID       *int        `xml:"id"`
-	Type     *SensorType `xml:"type"`
-	Channel1 *Channel    `xml:"ch1"`
-	Channel2 *Channel    `xml:"ch2"`
-	Channel3 *Channel    `xml:"ch3"`
+	Temperature *float32    `xml:"tmpr"`
+	Sensor      *int        `xml:"sensor"`
+	ID          *int        `xml:"id"`
+	Type        *SensorType `xml:"type"`
+	Channel1    *Channel    `xml:"ch1"`
+	Channel2    *Channel    `xml:"ch2"`
+	Channel3    *Channel    `xml:"ch3"`
 
 	// Present in history updates:
 	History *History `xml:"hist"`

@@ -10,9 +10,11 @@ var testData = `<msg><src>CC128-v0.11</src><dsb>00089</dsb><time>13:02:39</time>
 `
 
 func newInt(v int) *int {
-	i := new(int)
-	*i = v
-	return i
+	return &v
+}
+
+func newFloat32(v float32) *float32 {
+	return &v
 }
 
 func TestReadSensorUpdate(t *testing.T) {
@@ -21,15 +23,15 @@ func TestReadSensorUpdate(t *testing.T) {
 
 	msg, err := msgReader.ReadMessage()
 	expected := &Message{
-		Src: "CC128-v0.11",
+		Src:            "CC128-v0.11",
 		DaysSinceBirth: 89,
-		TimeOfDay: "13:02:39",
-		Temperature: 18.7,
+		TimeOfDay:      "13:02:39",
 
-		Sensor: newInt(1),
-		ID: newInt(1234),
-		
-		Type: (*SensorType)(newInt(1)),
+		Temperature: newFloat32(18.7),
+		Sensor:      newInt(1),
+		ID:          newInt(1234),
+
+		Type:     (*SensorType)(newInt(1)),
 		Channel1: &Channel{Watts: 345},
 		Channel2: &Channel{Watts: 2151},
 		Channel3: &Channel{Watts: 0},
