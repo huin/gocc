@@ -24,7 +24,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 
 	"github.com/huin/goserial"
 )
@@ -106,7 +105,6 @@ func (reader *MessageReader) ReadMessage() (*Message, error) {
 	}
 
 	msg := new(Message)
-	log.Printf("line=%q", line)
 	if err = xml.Unmarshal(line, msg); err != nil {
 		return nil, err
 	}
