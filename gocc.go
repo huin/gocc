@@ -85,12 +85,12 @@ func (reader *MessageReader) Close() error {
 	return nil
 }
 
-func (reader *MessageReader) ReadMessage() error {
+func (reader *MessageReader) ReadMessage() (*Message, error) {
 	line, isPrefix, err := reader.Reader.ReadLine()
 	if isPrefix {
-		return ErrLineTooLong
+		return nil, ErrLineTooLong
 	} else if err != nil {
-		return err
+		return nil, err
 	}
 
 	// The Current Cost unit seems to occasionally insert a \xfc byte at the
@@ -100,13 +100,15 @@ func (reader *MessageReader) ReadMessage() error {
 	}
 
 	if len(line) == 0 {
-		return ErrLineEmpty
+		return nil, ErrLineEmpty
 	}
 
 	msg := new(Message)
-	err = xml.Unmarshal(line, msg)
+	if err = xml.Unmarshal(line, msg); err != nil {
+		return nil, err
+	}
 
-	return msg, err
+	return msg, nil
 }
 
 type SensorType int
