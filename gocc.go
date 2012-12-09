@@ -47,8 +47,9 @@ type MessageReader struct {
 // implements io.Closer, then it will be closed when MessageReader.Close is
 // called.
 func NewMessageReader(r io.Reader) *MessageReader {
+	c, _ := r.(io.Closer)
 	return &MessageReader{
-		Closer: r.(io.Closer),
+		Closer: c,
 		Reader: bufio.NewReaderSize(r, 16*1024),
 	}
 }
