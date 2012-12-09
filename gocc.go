@@ -5,17 +5,17 @@
 //
 // Typical usage:
 //
-// msgReader, err := gocc.NewSerialMessageReader("/dev/ttyUSB0")
-// if err != nil {
-//   // deal with err
-// }
-// for {
-//   if msg, err := msgReader.ReadMessage(); err != nil {
+//   msgReader, err := gocc.NewSerialMessageReader("/dev/ttyUSB0")
+//   if err != nil {
 //     // deal with err
-//   } else {
-//     // use msg
 //   }
-// }
+//   for {
+//     if msg, err := msgReader.ReadMessage(); err != nil {
+//       // deal with err
+//     } else {
+//       // use msg
+//     }
+//   }
 package gocc
 
 import (
