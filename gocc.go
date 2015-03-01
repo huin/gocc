@@ -24,6 +24,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strconv"
 
 	"github.com/huin/goserial"
 )
@@ -149,23 +150,43 @@ type Channel struct {
 }
 
 type History struct {
-	DaysSinceWipe int           `xml:"dsw"`
-	Type          SensorType    `xml:"type"`
-	Units         UnitsType     `xml:"units"`
-	Data          []HistoryData `xml:"data"`
+	DaysSinceWipe int             `xml:"dsw"`
+	Type          SensorType      `xml:"type"`
+	Units         UnitsType       `xml:"units"`
+	Sensors       []SensorHistory `xml:"data"`
 }
 
-type HistoryData struct {
+type SensorHistory struct {
 	Sensor int `xml:"sensor"`
 
 	// Sometimes present:
 	Units *UnitsType `xml:"units"`
 
 	// Values over time.
-	Values []HistoryDataPoint `xml:",any"`
+	Points []SensorDataPoint `xml:",any"`
 }
 
-type HistoryDataPoint struct {
+type SensorDataPoint struct {
 	XMLName xml.Name // Represents time range (e.g "h024" meaning 22 to 24 hours ago).
 	Value   float32  `xml:",chardata"`
+}
+
+type HistTimeUnitType byte
+
+const (
+	HistTimeHour  = HistTimeUnitType('h')
+	HistTimeDay   = HistTimeUnitType('d')
+	HistTimeMonth = HistTimeUnitType('m')
+)
+
+// Time returns the time offset data. Can return error for malformed data. The
+// value of the HistTimeUnitType is not checked.
+func (hdp *SensorDataPoint) Time() (HistTimeUnitType, int, error) {
+	n := hdp.XMLName.Local
+	if len(n) < 2 {
+		return 0, 0, fmt.Errorf("history data point ID %q too short", n)
+	}
+	u := HistTimeUnitType(n[0])
+	o, err := strconv.Atoi(n[1:])
+	return u, o, err
 }

@@ -70,10 +70,10 @@ func TestTwoHourlyHistory(t *testing.T) {
 			DaysSinceWipe: 32,
 			Type:          SensorElectricity,
 			Units:         UnitKWHr,
-			Data: []HistoryData{
+			Sensors: []SensorHistory{
 				{
 					Sensor: 0,
-					Values: []HistoryDataPoint{
+					Points: []SensorDataPoint{
 						{XMLName: xmlName("h024"), Value: 1.1},
 						{XMLName: xmlName("h022"), Value: 0.9},
 						{XMLName: xmlName("h020"), Value: 0.3},
@@ -83,7 +83,7 @@ func TestTwoHourlyHistory(t *testing.T) {
 				{
 					Sensor: 9,
 					Units:  newUnits(UnitKWHr),
-					Values: []HistoryDataPoint{
+					Points: []SensorDataPoint{
 						{XMLName: xmlName("h024"), Value: 0},
 						{XMLName: xmlName("h022"), Value: 0},
 						{XMLName: xmlName("h020"), Value: 0},
@@ -98,5 +98,17 @@ func TestTwoHourlyHistory(t *testing.T) {
 		t.Errorf("unexpected error: %v", err)
 	} else if !reflect.DeepEqual(expected, msg) {
 		t.Errorf("mismatched expected result\nexpected %#v\n     got %#v", expected, msg)
+	}
+
+	u, o, err := msg.History.Sensors[0].Points[0].Time()
+	if err != nil {
+		t.Errorf("Expected err = nil, got %v", err)
+	} else {
+		if u != HistTimeHour {
+			t.Errorf("Expected u = '%c', got '%c'", HistTimeHour, u)
+		}
+		if o != 24 {
+			t.Errorf("Expected o = %d, got %d", 24, o)
+		}
 	}
 }
